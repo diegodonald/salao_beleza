@@ -1,63 +1,79 @@
 'use client'
 
 import { useState } from 'react'
-import { supabase } from '@/lib/supabaseClient'
 import { useRouter } from 'next/navigation'
-import Link from 'next/link'
+import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
 
-export default function RegisterPage() {
-  const router = useRouter()
+export default function Registro() {
   const [email, setEmail] = useState('')
   const [senha, setSenha] = useState('')
+  const [confirmarSenha, setConfirmarSenha] = useState('')
   const [erro, setErro] = useState('')
-  const [mensagem, setMensagem] = useState('')
+  const router = useRouter()
+  const supabase = createClientComponentClient()
 
-  const handleRegister = async (e: React.FormEvent) => {
+  const handleRegistro = async (e: React.FormEvent) => {
     e.preventDefault()
 
-    const { error } = await supabase.auth.signUp({
+    if (senha !== confirmarSenha) {
+      setErro('As senhas não coincidem.')
+      return
+    }
+
+    const { data, error } = await supabase.auth.signUp({
       email,
-      password: senha
+      password: senha,
     })
 
     if (error) {
       setErro(error.message)
     } else {
-      setMensagem('Cadastro feito com sucesso! Você já pode fazer login.')
-      setEmail('')
-      setSenha('')
+      setErro('')
+      router.push('/') // Redireciona para a página inicial após o registro
     }
   }
 
   return (
-    <div className="max-w-md mx-auto mt-10 p-6 bg-white shadow rounded-md">
-      <h2 className="text-2xl font-bold mb-4 text-center">Cadastro</h2>
-      {erro && <p className="text-red-500 mb-4">{erro}</p>}
-      {mensagem && <p className="text-green-600 mb-4">{mensagem}</p>}
-      <form onSubmit={handleRegister} className="space-y-4">
+    <div className="flex justify-center items-center min-h-screen bg-gray-100">
+      <form onSubmit={handleRegistro} className="bg-white p-8 rounded shadow-md w-full max-w-md">
+        <h2 className="text-2xl font-bold mb-6 text-center">Registro</h2>
+
         <input
           type="email"
-          placeholder="Seu e-mail"
+          placeholder="Email"
           value={email}
-          onChange={e => setEmail(e.target.value)}
-          className="w-full p-2 border rounded"
+          onChange={(e) => setEmail(e.target.value)}
+          className="w-full p-2 mb-4 border rounded"
           required
         />
+
         <input
           type="password"
           placeholder="Senha"
           value={senha}
-          onChange={e => setSenha(e.target.value)}
-          className="w-full p-2 border rounded"
+          onChange={(e) => setSenha(e.target.value)}
+          className="w-full p-2 mb-4 border rounded"
           required
         />
-        <button type="submit" className="w-full bg-black text-white py-2 rounded hover:bg-gray-800">
-          Cadastrar
+
+        <input
+          type="password"
+          placeholder="Confirmar senha"
+          value={confirmarSenha}
+          onChange={(e) => setConfirmarSenha(e.target.value)}
+          className="w-full p-2 mb-4 border rounded"
+          required
+        />
+
+        {erro && <p className="text-red-500 mb-4">{erro}</p>}
+
+        <button
+          type="submit"
+          className="w-full bg-green-600 hover:bg-green-700 text-white p-2 rounded"
+        >
+          Registrar
         </button>
       </form>
-      <p className="mt-4 text-center">
-        Já tem conta? <Link href="/login" className="text-blue-600 hover:underline">Entrar</Link>
-      </p>
     </div>
   )
 }
