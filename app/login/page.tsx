@@ -20,6 +20,10 @@ export default function LoginPage() {
       password: senha
     })
 
+    // Diagnóstico: verificar se o usuário está realmente logado
+    const { data: { user: usuarioLogado } } = await supabase.auth.getUser()
+    console.log('Usuário logado:', usuarioLogado)
+
     if (error) {
       setErro('Email ou senha inválidos.')
     } else {
