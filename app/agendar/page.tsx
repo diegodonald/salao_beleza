@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { supabase } from '@/lib/supabaseClient'
 import { useRouter } from 'next/navigation'
+import Header from '@/components/Header'
 
 const servicos = [
   { nome: "Corte", duracao: 30 },
@@ -48,38 +49,42 @@ export default function AgendarPage() {
   }
 
   return (
-    <div className="max-w-md mx-auto mt-10 p-6 bg-white shadow rounded-md">
-      <h2 className="text-2xl font-bold mb-4 text-center">Agendar horário</h2>
-      <form onSubmit={handleAgendar} className="space-y-4">
-        <select
-          className="w-full p-2 border rounded"
-          value={servico}
-          onChange={e => setServico(e.target.value)}
-        >
-          {servicos.map((s, i) => (
-            <option key={i} value={s.nome}>{s.nome} – {s.duracao} min</option>
-          ))}
-        </select>
+    <>
+      <Header />
 
-        <input
-          type="date"
-          className="w-full p-2 border rounded"
-          value={data}
-          onChange={e => setData(e.target.value)}
-          required
-        />
-        <input
-          type="time"
-          className="w-full p-2 border rounded"
-          value={hora}
-          onChange={e => setHora(e.target.value)}
-          required
-        />
-        <button type="submit" className="w-full bg-black text-white py-2 rounded hover:bg-gray-800">
-          Confirmar Agendamento
-        </button>
-      </form>
-      {mensagem && <p className="mt-4 text-center text-green-600">{mensagem}</p>}
-    </div>
+      <div className="max-w-md mx-auto mt-10 p-6 bg-white shadow rounded-md">
+        <h2 className="text-2xl font-bold mb-4 text-center">Agendar horário</h2>
+        <form onSubmit={handleAgendar} className="space-y-4">
+          <select
+            className="w-full p-2 border rounded"
+            value={servico}
+            onChange={e => setServico(e.target.value)}
+          >
+            {servicos.map((s, i) => (
+              <option key={i} value={s.nome}>{s.nome} – {s.duracao} min</option>
+            ))}
+          </select>
+
+          <input
+            type="date"
+            className="w-full p-2 border rounded"
+            value={data}
+            onChange={e => setData(e.target.value)}
+            required
+          />
+          <input
+            type="time"
+            className="w-full p-2 border rounded"
+            value={hora}
+            onChange={e => setHora(e.target.value)}
+            required
+          />
+          <button type="submit" className="w-full bg-black text-white py-2 rounded hover:bg-gray-800">
+            Confirmar Agendamento
+          </button>
+        </form>
+        {mensagem && <p className="mt-4 text-center text-green-600">{mensagem}</p>}
+      </div>
+    </>
   )
 }
