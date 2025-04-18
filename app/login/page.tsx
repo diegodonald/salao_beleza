@@ -9,6 +9,7 @@ export default function LoginPage() {
   const router = useRouter()
   const [email, setEmail] = useState('')
   const [senha, setSenha] = useState('')
+  const [mostrarSenha, setMostrarSenha] = useState(false)
   const [erro, setErro] = useState('')
 
   const handleLogin = async (e: React.FormEvent) => {
@@ -22,7 +23,7 @@ export default function LoginPage() {
     if (error) {
       setErro('Email ou senha inválidos.')
     } else {
-      router.push('/agendar')
+      router.push('/')
     }
   }
 
@@ -39,20 +40,37 @@ export default function LoginPage() {
           className="w-full p-2 border rounded"
           required
         />
-        <input
-          type="password"
-          placeholder="Senha"
-          value={senha}
-          onChange={e => setSenha(e.target.value)}
-          className="w-full p-2 border rounded"
-          required
-        />
+
+        {/* Campo de senha com botão de olho */}
+        <div className="relative">
+          <input
+            type={mostrarSenha ? 'text' : 'password'}
+            placeholder="Senha"
+            value={senha}
+            onChange={e => setSenha(e.target.value)}
+            className="w-full p-2 border rounded pr-10"
+            required
+          />
+          <button
+            type="button"
+            onClick={() => setMostrarSenha(!mostrarSenha)}
+            className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500"
+            tabIndex={-1}
+          >
+            {mostrarSenha ? '🙈' : '👁️'}
+          </button>
+        </div>
+
         <button type="submit" className="w-full bg-black text-white py-2 rounded hover:bg-gray-800">
           Entrar
         </button>
       </form>
+
       <p className="mt-4 text-center">
-        Ainda não tem conta? <Link href="/register" className="text-blue-600 hover:underline">Cadastre-se</Link>
+        Ainda não tem conta?{' '}
+        <Link href="/register" className="text-blue-600 hover:underline">
+          Cadastre-se
+        </Link>
       </p>
     </div>
   )
