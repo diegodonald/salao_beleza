@@ -5,21 +5,24 @@ import { useRouter } from 'next/navigation'
 import { supabase } from '@/lib/supabaseClient'
 
 export default function Registro() {
+  const router = useRouter()
+
+  const [nome, setNome] = useState('')
   const [email, setEmail] = useState('')
   const [senha, setSenha] = useState('')
   const [confirmarSenha, setConfirmarSenha] = useState('')
-  const [nome, setNome] = useState('')
   const [erro, setErro] = useState('')
-  const router = useRouter()
 
   const handleRegistro = async (e: React.FormEvent) => {
     e.preventDefault()
+    setErro('')
 
     if (senha !== confirmarSenha) {
       setErro('As senhas não coincidem.')
       return
     }
 
+    // 1. Cria o usuário no Supabase Auth
     const { data, error } = await supabase.auth.signUp({
       email,
       password: senha,
@@ -32,23 +35,36 @@ export default function Registro() {
 
     const userId = data.user?.id
     if (userId) {
-      const { error: insertError } = await supabase.from('usuarios').insert([
-        { id: userId, nome }
-      ])
+      // 2. Insere o nome na tabela 'usuarios'
+      const { error: insertError } = await supabase
+        .from('usuarios')
+        .insert([{ id: userId, nome }])
 
       if (insertError) {
         setErro('Erro ao salvar nome do usuário.')
         return
       }
+
+      // 3. Faz login automático
+      const { error: loginError } = await supabase.auth.signInWithPassword({
+        email,
+        password: senha,
+      })
+
+      if (loginError) {
+        setErro('Usuário criado, mas erro ao fazer login automático.')
+        return
+      }
     }
 
+    // 4. Redireciona para a página inicial
     router.push('/')
   }
 
   return (
     <div className="flex justify-center items-center min-h-screen bg-gray-100">
       <form onSubmit={handleRegistro} className="bg-white p-8 rounded shadow-md w-full max-w-md">
-        <h2 className="text-2xl font-bold mb-6 text-center">Registro</h2>
+        <h2 className="text-2xl font-bold mb-6 text-center text-rose-600">Registro</h2>
 
         <input
           type="text"
@@ -86,11 +102,11 @@ export default function Registro() {
           required
         />
 
-        {erro && <p className="text-red-500 mb-4">{erro}</p>}
+        {erro && <p className="text-red-500 mb-4 text-sm">{erro}</p>}
 
         <button
           type="submit"
-          className="w-full bg-green-600 hover:bg-green-700 text-white p-2 rounded"
+          className="w-full bg-rose-600 hover:bg-rose-700 text-white p-2 rounded"
         >
           Registrar
         </button>
