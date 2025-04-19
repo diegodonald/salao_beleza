@@ -22,7 +22,7 @@ export default function Registro() {
       return
     }
 
-    // Cria o usuário no Supabase Auth
+    // 1. Cria o usuário no Supabase Auth
     const { data, error } = await supabase.auth.signUp({
       email,
       password: senha,
@@ -35,7 +35,7 @@ export default function Registro() {
 
     const userId = data.user?.id
     if (userId) {
-      // Insere nome na tabela 'usuarios'
+      // 2. Insere o nome na tabela 'usuarios'
       const { error: insertError } = await supabase
         .from('usuarios')
         .insert([{ id: userId, nome }])
@@ -44,10 +44,21 @@ export default function Registro() {
         setErro('Erro ao salvar nome do usuário.')
         return
       }
+
+      // 3. Faz login automático
+      const { error: loginError } = await supabase.auth.signInWithPassword({
+        email,
+        password: senha,
+      })
+
+      if (loginError) {
+        setErro('Usuário criado, mas erro ao fazer login automático.')
+        return
+      }
     }
 
-    // Redireciona para a página de login
-    router.push('/login')
+    // 4. Redireciona para a página inicial
+    router.push('/')
   }
 
   return (

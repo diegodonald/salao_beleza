@@ -77,7 +77,7 @@ export default function Header() {
             <Link href="/servicos">Serviços</Link>
             <Link href="/agendar">Agendar</Link>
             <Link href="/reservas">Reservas</Link>
-            <Link href="/login">Login</Link>
+            {!usuarioLogado && <Link href="/login">Login</Link>}
             <Link href="/admin">Painel</Link>
           </nav>
 
